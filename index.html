@@ -147,25 +147,24 @@ html,body{
 .card:hover{box-shadow:0 10px 22px rgba(0,0,0,.08)}
 
 /* الشواهد — 4 صور */
-.gallery{
-  margin-top:var(--gap-gallery);
-  display:grid; grid-template-columns:1fr 1fr; grid-template-rows:1fr 1fr;
-  gap:4mm; height:116mm; margin-top:auto;
-}
-.photo{
-  position:relative; background:#fff; border:1px solid var(--line); border-radius:14px;
-  display:flex; align-items:center; justify-content:center; overflow:hidden;
-  box-shadow:0 8px 18px rgba(0,0,0,.06);
-}
-.photo input{position:absolute; inset:0; opacity:0; cursor:pointer; z-index:3}
-.photo .hint{
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-  color:#b91c1c; font-size:11px; z-index:2;
-  text-align:center; padding:4px 8px;
-}
-.photo::before{content:""; position:absolute; inset:0; pointer-events:none; background:linear-gradient(180deg,transparent,rgba(47,127,121,.05)); z-index:1;}
-.photo img{position:absolute; inset:0; width:100%; height:100%; object-fit:contain; z-index:2; display:block}
+    <div class="gallery" id="gallery">
+      <div class="photo">
+        <input type="file" accept="image/*">
+        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
+      </div>
+      <div class="photo">
+        <input type="file" accept="image/*">
+        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
+      </div>
+      <div class="photo">
+        <input type="file" accept="image/*">
+        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
+      </div>
+      <div class="photo">
+        <input type="file" accept="image/*">
+        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
+      </div>
+    </div>
 
 /* التواقيع */
 .signatures{margin-top:var(--gap-sign); height:22mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm}
