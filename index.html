@@ -289,24 +289,26 @@ html,body{
     </div>
 
     <!-- الشواهد (4 صور) -->
-    <div class="gallery" id="gallery">
-      <div class="photo">
-        <input type="file" accept="image/*">
-        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
-      </div>
-      <div class="photo">
-        <input type="file" accept="image/*">
-        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
-      </div>
-      <div class="photo">
-        <input type="file" accept="image/*">
-        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
-      </div>
-      <div class="photo">
-        <input type="file" accept="image/*">
-        <div class="hint" data-nopdf="true">تنبيه: يُفضّل استخدام صور بصيغة JPG للحصول على أفضل جودة في التقرير</div>
-      </div>
-    </div>
+    <script>
+document.querySelectorAll(".photo").forEach(box=>{
+  const input = box.querySelector("input");
+
+  box.addEventListener("click", ()=>{
+    input.click();
+  });
+
+  input.addEventListener("change", ()=>{
+    const file = input.files[0];
+    if(!file) return;
+
+    const img = document.createElement("img");
+    img.src = URL.createObjectURL(file);
+
+    box.innerHTML = "";
+    box.appendChild(img);
+  });
+});
+</script>
 
     <!-- التواقيع -->
     <div class="signatures">
