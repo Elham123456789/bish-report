@@ -457,12 +457,24 @@ document.addEventListener('DOMContentLoaded', ()=>{
     fitBox(id);
   });
   document.querySelectorAll('.gallery .photo').forEach(bindPhotoBox);
-  document.getElementById('btnPdf')?.addEventListener('click', async ()=>{
-    try{ setBusy(true); save(); await makePdf(); }
-    catch(e){ console.error(e); alert('تعذّر إنشاء PDF.'); }
-    finally{ setBusy(false); }
-  });
+ 
+document.getElementById('btnPdf')?.addEventListener('click', async ()=>{
+  try{
+    setBusy(true);
+    save();
+    await makePdf();
+
+    // تصفير النموذج بعد الحفظ
+    resetForm();
+
+  }catch(e){
+    console.error(e);
+    alert('تعذّر إنشاء PDF.');
+  }finally{
+    setBusy(false);
+  }
 });
+
 </script>
 </body>
 </html>
