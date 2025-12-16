@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
@@ -237,11 +236,11 @@ html,body{
     <table class="table" id="infoTable" role="table" aria-label="بيانات البرنامج">
       <tr class="title-row">
         <th colspan="4">
-          <div id="reportTitle" contenteditable="true">تقرير تنفيذ برنامج (.......)</div>
+          <div id="reportTitle" contenteditable="true">تقرير تنفيذ برنامج (قابل للتعديل)</div>
         </th>
       </tr>
       <tr>
-        <th class="label" contenteditable="true">معدّة البرنامج</th>
+        <th class="label" contenteditable="true">منفذة البرنامج</th>
         <td contenteditable="true">اسم الجهة المنفذة</td>
         <th class="label" contenteditable="true">المكان</th>
         <td contenteditable="true"></td>
@@ -253,7 +252,7 @@ html,body{
         <td contenteditable="true"></td>
       </tr>
       <tr>
-        <th class="label" contenteditable="true">عدد الحاضرات</th>
+        <th class="label" contenteditable="true">عدد الحضور</th>
         <td contenteditable="true"></td>
         <th class="label" contenteditable="true">مدة البرنامج</th>
         <td contenteditable="true"></td>
@@ -270,7 +269,7 @@ html,body{
             <button class="toolbtn" onclick="adjText('goals',-1)">−A</button>
             <button class="toolbtn" onclick="toggleBold('goals')">B</button>
           </div>
-          <div id="goals" class="fittext" contenteditable="true">اكتبي الأهداف هنا…</div>
+          <div id="goals" class="fittext" contenteditable="true">اكتب الأهداف هنا…</div>
         </div>
       </div>
       <div class="card">
@@ -281,7 +280,7 @@ html,body{
             <button class="toolbtn" onclick="adjText('about',-1)">−A</button>
             <button class="toolbtn" onclick="toggleBold('about')">B</button>
           </div>
-          <div id="about" class="fittext" contenteditable="true">اكتبي النبذة هنا…</div>
+          <div id="about" class="fittext" contenteditable="true">اكتب النبذة هنا…</div>
         </div>
       </div>
     </div>
@@ -310,7 +309,7 @@ html,body{
     <div class="signatures">
       <div class="sig">
         <h4 contenteditable="true">المساعد إداري</h4>
-        <div class="name" contenteditable="true">الرجاء كتابة الاسم</div>
+        <div class="name" contenteditable="true">أكتبي الاسم</div>
       </div>
       <div class="sig">
         <h4>مديرة المدرسة</h4>
@@ -447,7 +446,6 @@ async function makePdf(){
 }
 
 /* تشغيل */
-
 document.addEventListener('DOMContentLoaded', ()=>{
   ['goals','about'].forEach(id=>{
     const el=document.getElementById(id);
@@ -460,9 +458,7 @@ document.addEventListener('DOMContentLoaded', ()=>{
     catch(e){ console.error(e); alert('تعذّر إنشاء PDF.'); }
     finally{ setBusy(false); }
   });
-
 });
 </script>
 </body>
 </html>
-
