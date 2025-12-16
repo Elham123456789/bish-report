@@ -447,22 +447,20 @@ async function makePdf(){
 }
 
 /* تشغيل */
-document.getElementById('btnPdf')?.addEventListener('click', async ()=>{
-  try{
-    setBusy(true);
-    save();
-    await makePdf();
 
-    // تصفير النموذج بعد الحفظ
-    resetForm();
+document.addEventListener('DOMContentLoaded', ()=>{
+  ['goals','about'].forEach(id=>{
+    const el=document.getElementById(id);
+    ['input','keyup','blur'].forEach(evt=> el.addEventListener(evt, ()=>{fitBox(id); save();}));
+    fitBox(id);
+  });
+  document.querySelectorAll('.gallery .photo').forEach(bindPhotoBox);
+  document.getElementById('btnPdf')?.addEventListener('click', async ()=>{
+    try{ setBusy(true); save(); await makePdf(); }
+    catch(e){ console.error(e); alert('تعذّر إنشاء PDF.'); }
+    finally{ setBusy(false); }
+  });
 
-  }catch(e){
-    console.error(e);
-    alert('تعذّر إنشاء PDF.');
-  }finally{
-    setBusy(false);
-  }
-});
 });
 </script>
 </body>
