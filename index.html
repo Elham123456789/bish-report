@@ -1,30 +1,22 @@
+
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>نموذج تقرير تنفيذ برنامج - روضة وابتدائية بيش الرابعة والعوق الفكري</title>
+<title>تقرير تنفيذ برنامج - روضة وابتدائية بيش الرابعة والعوق الفكري</title>
 
 <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800&display=swap" rel="stylesheet">
 <script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
 <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <style>
-:root{
-  --green-dark:#0f766e;
-  --green-main:#2f7f79;
-  --green-light:#ecfdf5;
-  --border:#d1fae5;
-  --ink:#064e3b;
-}
-
 body{
   margin:0;
   font-family:"Tajawal",Tahoma,Arial;
-  background:#f0fdfa;
-  color:var(--ink);
+  background:#f6f8fb;
+  color:#0f172a;
 }
-
 .sheet{
   width:210mm;
   height:297mm;
@@ -32,12 +24,10 @@ body{
   background:#fff;
   box-shadow:0 10px 25px rgba(0,0,0,.08);
   display:grid;
-  grid-template-rows:32mm auto 6mm;
+  grid-template-rows:30mm auto 6mm;
 }
-
-/* ===== الهيدر الرسمي ===== */
 .header{
-  background:linear-gradient(90deg,var(--green-dark),var(--green-main));
+  background:#0e3b46;
   color:#fff;
   display:flex;
   flex-direction:column;
@@ -46,26 +36,9 @@ body{
   text-align:center;
   font-weight:800;
 }
-.header div{line-height:1.8}
+.header div{line-height:1.7}
 
-/* ===== زر الحفظ ===== */
-.actions{
-  text-align:left;
-  margin:6px 10mm 0;
-}
-#btnPdf{
-  background:var(--green-dark);
-  color:#fff;
-  border:none;
-  padding:10px 18px;
-  border-radius:12px;
-  font-family:"Tajawal";
-  font-weight:800;
-  cursor:pointer;
-}
-#btnPdf:hover{background:#115e59}
-
-.main{padding:8mm 10mm}
+.main{padding:10mm}
 
 .table{
   width:100%;
@@ -73,25 +46,20 @@ body{
   margin-bottom:6mm;
 }
 .table th,.table td{
-  border:1px solid var(--border);
-  padding:7px;
+  border:1px solid #e5e7eb;
+  padding:6px;
   text-align:center;
 }
 .table th{
-  background:var(--green-light);
-  font-weight:800;
+  background:#ecf7f8;
+  font-weight:700;
 }
 
 .section{
-  border:1px solid var(--border);
-  border-radius:12px;
+  border:1px solid #e5e7eb;
+  border-radius:10px;
   padding:6mm;
   margin-bottom:6mm;
-}
-.section strong{
-  display:block;
-  margin-bottom:4px;
-  color:var(--green-dark);
 }
 
 .gallery{
@@ -101,13 +69,12 @@ body{
   margin-bottom:6mm;
 }
 .photo{
-  border:2px dashed var(--green-main);
+  border:1px dashed #94a3b8;
   height:55mm;
   display:flex;
   justify-content:center;
   align-items:center;
   cursor:pointer;
-  font-size:13px;
 }
 .photo input{display:none}
 .photo img{width:100%;height:100%;object-fit:contain}
@@ -118,59 +85,54 @@ body{
   gap:6mm;
 }
 .sig{
-  border:1px solid var(--border);
+  border:1px solid #e5e7eb;
   padding:6mm;
   text-align:center;
-  font-weight:800;
+  font-weight:700;
 }
 
-.footer{
-  background:var(--green-dark);
-}
-
-/* ===== الطباعة ===== */
+.footer{background:#0e3b46}
 @media print{
   body{background:#fff}
   .sheet{box-shadow:none;margin:0}
-  .actions{display:none}
 }
 </style>
 </head>
 
 <body>
-
 <div class="sheet" id="sheet">
 
-  <!-- الهيدر -->
+  <!-- الهيدر الثابت -->
   <div class="header">
     <div>الإدارة العامة للتعليم بمحافظة جازان</div>
     <div>مكتب تعليم بيش والريث</div>
     <div>روضة وابتدائية بيش الرابعة والعوق الفكري</div>
   </div>
 
-  <!-- زر الحفظ -->
-  <div class="actions">
-    <button id="btnPdf">حفظ التقرير بصيغة PDF</button>
-  </div>
-
   <div class="main">
 
-    <!-- الجدول -->
+    <!-- جدول البيانات -->
     <table class="table">
       <tr>
-        <th colspan="4">نموذج تقرير تنفيذ برنامج معتمد</th>
+        <th colspan="4">تقرير تنفيذ برنامج</th>
       </tr>
       <tr>
-        <th>مقدم البرنامج</th><td></td>
-        <th>مكان التنفيذ</th><td></td>
+        <th>مقدم البرنامج</th>
+        <td></td>
+        <th>مكان التنفيذ</th>
+        <td></td>
       </tr>
       <tr>
-        <th>التاريخ الهجري</th><td id="hijri"></td>
-        <th>المستفيدون</th><td></td>
+        <th>التاريخ الهجري</th>
+        <td id="hijri"></td>
+        <th>المستفيدون</th>
+        <td></td>
       </tr>
       <tr>
-        <th>عدد الحضور</th><td></td>
-        <th>مدة البرنامج</th><td></td>
+        <th>عدد الحضور</th>
+        <td></td>
+        <th>مدة البرنامج</th>
+        <td></td>
       </tr>
     </table>
 
@@ -180,7 +142,7 @@ body{
       <p></p>
     </div>
 
-    <!-- النبذة -->
+    <!-- نبذة -->
     <div class="section">
       <strong>نبذة عن البرنامج</strong>
       <p></p>
@@ -188,10 +150,10 @@ body{
 
     <!-- الشواهد -->
     <div class="gallery">
-      <label class="photo">إضافة صورة<input type="file" accept="image/*"></label>
-      <label class="photo">إضافة صورة<input type="file" accept="image/*"></label>
-      <label class="photo">إضافة صورة<input type="file" accept="image/*"></label>
-      <label class="photo">إضافة صورة<input type="file" accept="image/*"></label>
+      <label class="photo"><input type="file" accept="image/*"></label>
+      <label class="photo"><input type="file" accept="image/*"></label>
+      <label class="photo"><input type="file" accept="image/*"></label>
+      <label class="photo"><input type="file" accept="image/*"></label>
     </div>
 
     <!-- التواقيع -->
@@ -211,12 +173,10 @@ body{
 </div>
 
 <script>
-/* التاريخ الهجري */
 document.getElementById("hijri").textContent =
  new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',
  {day:'numeric',month:'long',year:'numeric'}).format(new Date());
 
-/* الصور */
 document.querySelectorAll(".photo input").forEach(input=>{
   input.addEventListener("change",e=>{
     const img=document.createElement("img");
@@ -225,19 +185,6 @@ document.querySelectorAll(".photo input").forEach(input=>{
     input.parentElement.appendChild(img);
   });
 });
-
-/* حفظ PDF */
-document.getElementById("btnPdf").onclick = async ()=>{
-  const canvas = await html2canvas(document.getElementById("sheet"),{
-    scale:2,
-    backgroundColor:"#ffffff"
-  });
-  const imgData = canvas.toDataURL("image/jpeg",0.95);
-  const {jsPDF} = window.jspdf;
-  const pdf = new jsPDF("p","mm","a4");
-  pdf.addImage(imgData,"JPEG",0,0,210,297);
-  pdf.save("تقرير_تنفيذ_برنامج_مدرسي.pdf");
-};
 </script>
 
 </body>
