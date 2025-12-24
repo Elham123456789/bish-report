@@ -10,63 +10,148 @@
 <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <style>
-/* === لم يتم تغيير أي CSS === */
+:root{
+  --ink:#0f172a; --muted:#64748b; --line:#e6eef2;
+  --paper:#ffffff; --bg:#f6f8fb;
+  --accent:#2f7f79; --accentDeep:#0e3b46; --footer:#0e3b46;
+  --base:14px; --title:19px; --name:17px;
+  --gap-top:4mm; --gap-mid:4mm; --gap-gallery:4.5mm; --gap-sign:5mm;
+}
+*{box-sizing:border-box}
+html,body{
+  height:100%; margin:0; background:var(--bg); color:var(--ink);
+  font-family:"Tajawal",system-ui,sans-serif; font-size:var(--base); line-height:1.6;
+}
+.sheet{
+  width:210mm; height:297mm; margin:12px auto; background:#fff;
+  border:1px solid #e5e7eb; box-shadow:0 10px 28px rgba(0,0,0,.08);
+  display:grid; grid-template-rows:30mm auto 6mm; overflow:hidden; position:relative;
+}
+.header-img{position:relative; height:30mm; background:#0e3b46}
+.header-img img{width:100%; height:100%; object-fit:cover}
+.header-center{
+  position:absolute; inset:0; display:flex; flex-direction:column;
+  align-items:center; justify-content:center; color:#fff; font-weight:800;
+}
+.header-action{position:absolute; top:10px; left:12px; z-index:10}
+.pdf-chip{
+  padding:10px 14px; border-radius:14px;
+  background:linear-gradient(180deg,#2f7f79,#0e3b46);
+  color:#fff; font-weight:800; border:none; cursor:pointer;
+}
+.main{padding:0 10mm; display:flex; flex-direction:column}
+.table{margin-top:4mm; width:100%; border-collapse:collapse}
+.table th,.table td{
+  border:1px solid #e6eef2; padding:6px; text-align:center
+}
+.title-row th{
+  background:#0e3b46; color:#fff; font-size:19px;
+}
+.split{margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm}
+.card{border:1px solid #e6eef2; border-radius:12px}
+.card .head{background:#eef7f8; padding:6px; font-weight:800}
+.card .body{padding:6px}
+.gallery{margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm}
+.photo{border:1px dashed #ccc; height:80mm; position:relative}
+.photo input{position:absolute; inset:0; opacity:0}
+.signatures{margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm}
+.footer-bar{height:6mm; background:#0e3b46}
+@media print{
+  .header-action{display:none}
+}
 </style>
 </head>
+
 <body>
 
-<!-- ===== نفس HTML بدون أي تغيير ===== -->
+<div class="sheet" id="sheet">
+  <div class="header-img">
+    <img src="header.jpg" alt="">
+    <div class="header-center">
+      <div>الإدارة العامة للتعليم بمحافظة جازان</div>
+      <div>قطاع بيش والريث</div>
+      <div>روضة وابتدائية بيش الرابعة والعوق الفكري</div>
+    </div>
+    <div class="header-action">
+      <button id="btnPdf" class="pdf-chip">الحفظ والطباعة</button>
+    </div>
+  </div>
+
+  <div class="main">
+    <table class="table" id="infoTable">
+      <tr class="title-row">
+        <th colspan="4">
+          <div id="reportTitle" contenteditable="true">
+            تقرير تنفيذ برنامج (.............) نوعه (......)
+          </div>
+        </th>
+      </tr>
+      <tr>
+        <th>منفذة البرنامج</th><td contenteditable="true"></td>
+        <th>المكان</th><td contenteditable="true"></td>
+      </tr>
+      <tr>
+        <th>التاريخ</th><td id="hijriDate"></td>
+        <th>المستفيدون</th><td contenteditable="true"></td>
+      </tr>
+    </table>
+
+    <div class="split">
+      <div class="card">
+        <div class="head">الأهداف</div>
+        <div class="body" id="goals" contenteditable="true">اكتب الأهداف هنا…</div>
+      </div>
+      <div class="card">
+        <div class="head">نبذة عن البرنامج</div>
+        <div class="body" id="about" contenteditable="true">اكتب النبذة هنا…</div>
+      </div>
+    </div>
+
+    <div class="gallery">
+      <div class="photo"><input type="file"></div>
+      <div class="photo"><input type="file"></div>
+    </div>
+
+    <div class="signatures">
+      <div contenteditable="true">المساعد الإداري</div>
+      <div>مديرة المدرسة</div>
+    </div>
+  </div>
+
+  <div class="footer-bar"></div>
+</div>
 
 <script>
-const STORAGE_KEY='report_v15_headerPDF_chip';
-function setBusy(b){const el=document.getElementById('btnPdf'); if(el) el.disabled=!!b;}
+const STORAGE_KEY='report_v15';
 
-/* ===== دالة التصفير (مضافة) ===== */
 function resetReport(){
   localStorage.removeItem(STORAGE_KEY);
-
-  document.getElementById('reportTitle').innerHTML =
-    'تقرير تنفيذ برنامج (.............) نوعه (......)';
-
+  document.getElementById('reportTitle').innerHTML='تقرير تنفيذ برنامج (.............) نوعه (......)';
   document.querySelectorAll('#infoTable td').forEach(td=>td.innerHTML='');
-
-  try{
-    document.getElementById('hijriDate').innerHTML =
-      new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',{
-        day:'2-digit',month:'long',year:'numeric'
-      }).format(new Date());
-  }catch{}
-
   document.getElementById('goals').innerHTML='اكتب الأهداف هنا…';
   document.getElementById('about').innerHTML='اكتب النبذة هنا…';
-
-  document.querySelectorAll('.gallery .photo img').forEach(img=>img.remove());
-
-  save();
+  document.getElementById('hijriDate').innerHTML=
+    new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',
+      {day:'2-digit',month:'long',year:'numeric'}).format(new Date());
 }
 
-/* ===== باقي الكود كما هو ===== */
+async function makePdf(){
+  const canvas = await html2canvas(document.getElementById('sheet'),{scale:2});
+  const img = canvas.toDataURL('image/jpeg',0.95);
+  const {jsPDF}=window.jspdf;
+  const pdf=new jsPDF('p','mm','a4');
+  pdf.addImage(img,'JPEG',0,0,210,297);
+  pdf.save('تقرير.pdf');
+}
 
-/* تعديل زر الحفظ والطباعة فقط */
-document.addEventListener('DOMContentLoaded', ()=>{
-  document.getElementById('btnPdf')?.addEventListener('click', async ()=>{
-    try{
-      setBusy(true);
-      save();
-      await makePdf();
-
-      /* ⬇️ التصفير التلقائي بعد الحفظ */
-      setTimeout(resetReport, 800);
-    }
-    catch(e){
-      console.error(e);
-      alert('تعذّر إنشاء PDF.');
-    }
-    finally{
-      setBusy(false);
-    }
-  });
+document.getElementById('btnPdf').addEventListener('click', async ()=>{
+  await makePdf();
+  setTimeout(resetReport,800);
 });
+
+document.getElementById('hijriDate').innerHTML=
+  new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',
+    {day:'2-digit',month:'long',year:'numeric'}).format(new Date());
 </script>
 
 </body>
