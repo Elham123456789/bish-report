@@ -10,6 +10,7 @@
 <script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
 
 <style>
+/* ======= CSS الأصلي بدون أي تعديل ======= */
 :root{
   --ink:#0f172a; --muted:#64748b; --line:#e6eef2;
   --paper:#ffffff; --bg:#f6f8fb;
@@ -23,42 +24,38 @@ html,body{
   font-family:"Tajawal",system-ui,sans-serif; font-size:var(--base); line-height:1.6;
 }
 .sheet{
-  width:210mm; height:297mm; margin:12px auto; background:#fff;
+  width:210mm; height:297mm; margin:12px auto; background:var(--paper);
   border:1px solid #e5e7eb; box-shadow:0 10px 28px rgba(0,0,0,.08);
   display:grid; grid-template-rows:30mm auto 6mm; overflow:hidden; position:relative;
 }
-.header-img{position:relative; height:30mm; background:#0e3b46}
-.header-img img{width:100%; height:100%; object-fit:cover}
+.header-img{position:relative;height:30mm;background:#0e3b46}
+.header-img img{width:100%;height:100%;object-fit:cover}
 .header-center{
-  position:absolute; inset:0; display:flex; flex-direction:column;
-  align-items:center; justify-content:center; color:#fff; font-weight:800;
+  position:absolute; inset:0;
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  color:#fff; font-weight:800;
 }
-.header-action{position:absolute; top:10px; left:12px; z-index:10}
+.header-action{position:absolute;top:10px;left:12px;z-index:10}
 .pdf-chip{
-  padding:10px 14px; border-radius:14px;
+  padding:10px 14px;border-radius:14px;
   background:linear-gradient(180deg,#2f7f79,#0e3b46);
-  color:#fff; font-weight:800; border:none; cursor:pointer;
+  color:#fff;font-weight:800;border:none;cursor:pointer;
 }
-.main{padding:0 10mm; display:flex; flex-direction:column}
-.table{margin-top:4mm; width:100%; border-collapse:collapse}
-.table th,.table td{
-  border:1px solid #e6eef2; padding:6px; text-align:center
-}
-.title-row th{
-  background:#0e3b46; color:#fff; font-size:19px;
-}
-.split{margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm}
-.card{border:1px solid #e6eef2; border-radius:12px}
-.card .head{background:#eef7f8; padding:6px; font-weight:800}
+.main{padding:0 10mm;display:flex;flex-direction:column}
+.table{margin-top:4mm;width:100%;border-collapse:collapse}
+.table th,.table td{border:1px solid #e6eef2;padding:6px;text-align:center}
+.title-row th{background:#0e3b46;color:#fff;font-size:19px}
+.split{margin-top:4mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.card{border:1px solid #e6eef2;border-radius:12px}
+.card .head{background:#eef7f8;padding:6px;font-weight:800}
 .card .body{padding:6px}
-.gallery{margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm}
-.photo{border:1px dashed #ccc; height:80mm; position:relative}
-.photo input{position:absolute; inset:0; opacity:0}
-.signatures{margin-top:4mm; display:grid; grid-template-columns:1fr 1fr; gap:4mm}
-.footer-bar{height:6mm; background:#0e3b46}
-@media print{
-  .header-action{display:none}
-}
+.gallery{margin-top:4mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.photo{border:1px dashed #ccc;height:80mm;position:relative}
+.photo input{position:absolute;inset:0;opacity:0}
+.signatures{margin-top:4mm;display:grid;grid-template-columns:1fr 1fr;gap:4mm}
+.footer-bar{height:6mm;background:#0e3b46}
+@media print{.header-action{display:none}}
 </style>
 </head>
 
@@ -122,36 +119,45 @@ html,body{
 </div>
 
 <script>
-const STORAGE_KEY='report_v15';
+const STORAGE_KEY='report_clean_safe';
 
-function resetReport(){
+function cleanOnly(){
   localStorage.removeItem(STORAGE_KEY);
-  document.getElementById('reportTitle').innerHTML='تقرير تنفيذ برنامج (.............) نوعه (......)';
-  document.querySelectorAll('#infoTable td').forEach(td=>td.innerHTML='');
-  document.getElementById('goals').innerHTML='اكتب الأهداف هنا…';
-  document.getElementById('about').innerHTML='اكتب النبذة هنا…';
+
+  document.querySelectorAll('[contenteditable]').forEach(el=>{
+    if(el.id==='reportTitle'){
+      el.innerHTML='تقرير تنفيذ برنامج (.............) نوعه (......)';
+    }else if(el.id==='goals'){
+      el.innerHTML='اكتب الأهداف هنا…';
+    }else if(el.id==='about'){
+      el.innerHTML='اكتب النبذة هنا…';
+    }else{
+      el.innerHTML='';
+    }
+  });
+
+  document.querySelectorAll('.gallery img').forEach(img=>img.remove());
+
   document.getElementById('hijriDate').innerHTML=
     new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',
       {day:'2-digit',month:'long',year:'numeric'}).format(new Date());
 }
 
 async function makePdf(){
-  const canvas = await html2canvas(document.getElementById('sheet'),{scale:2});
-  const img = canvas.toDataURL('image/jpeg',0.95);
+  const canvas=await html2canvas(document.getElementById('sheet'),{scale:2});
+  const img=canvas.toDataURL('image/jpeg',0.95);
   const {jsPDF}=window.jspdf;
   const pdf=new jsPDF('p','mm','a4');
   pdf.addImage(img,'JPEG',0,0,210,297);
   pdf.save('تقرير.pdf');
 }
 
-document.getElementById('btnPdf').addEventListener('click', async ()=>{
+document.getElementById('btnPdf').onclick=async()=>{
   await makePdf();
-  setTimeout(resetReport,800);
-});
+  setTimeout(cleanOnly,800);
+};
 
-document.getElementById('hijriDate').innerHTML=
-  new Intl.DateTimeFormat('ar-SA-u-ca-islamic-umalqura',
-    {day:'2-digit',month:'long',year:'numeric'}).format(new Date());
+cleanOnly();
 </script>
 
 </body>
