@@ -1,138 +1,68 @@
 <!DOCTYPE html>
 <html lang="ar" dir="rtl">
 <head>
-<meta charset="utf-8"/>
-<meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>تقرير تنفيذ برنامج — وزارة التعليم</title>
-<link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;600;700;800&display=swap" rel="stylesheet">
-<script defer src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
-<script defer src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
-<style>
-  /* سيبقى التنسيق بدون تعديل حسب النسخة السابقة */
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>تقرير بيش</title>
+  <style>
+    /* تنسيقات الصفحة العامة */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 20px;
+      background-color: #FFFFFF;
+      color: #000000;
+    }
+    /* تنسيق لعناصر معينة إن وجدت */
+    form label {
+      font-weight: bold;
+    }
+    form input, form textarea {
+      margin: 5px 0 15px 0;
+      padding: 5px;
+      width: 100%;
+      max-width: 500px;
+    }
+    /* إخفاء عناصر معينة عند الطباعة */
+    @media print {
+      .no-print {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 <body>
-<!-- باقي عناصر HTML كما هي بدون تغيير -->
-<div class="sheet" id="sheet">
-  <!-- عناصر التقرير ... -->
-</div>
-<script>
-const STORAGE_KEY = 'report_v15_headerPDF_chip';
-function setBusy(b){
-  const el = document.getElementById('btnPdf');
-  if(el) el.disabled = !!b;
-}
-function fitBox(id){
-  const el = document.getElementById(id);
-  if(!el) return;
-  const p = el.parentElement;
-  let s = parseFloat(getComputedStyle(el).fontSize)||15;
-  const set = v => {
-    el.style.fontSize = v+'px';
-    el.style.lineHeight = Math.max(1.25, Math.min(1.6, 1.3+(v-12)*0.05));
-  };
-  set(s);
-  let i = 0;
-  while(i++<80 && el.scrollHeight > p.clientHeight && s > 12){ s -= .5; set(s); }
-  i = 0;
-  while(i++<40 && el.scrollHeight < p.clientHeight*.9 && s < 20){
-    s += .5; set(s);
-    if(el.scrollHeight > p.clientHeight){ s -= .5; set(s); break; }
-  }
-}
-function snap(){
-  const cells = [...document.querySelectorAll('#infoTable th,#infoTable td')].map(c => c.innerHTML);
-  const photos = [...document.querySelectorAll('.gallery .photo img')].map(i => i?.src || '');
-  return {
-    title: document.getElementById('reportTitle').innerHTML,
-    h: document.getElementById('hijriDate').innerHTML,
-    g: document.getElementById('goals').innerHTML,
-    a: document.getElementById('about').innerHTML,
-    cells, photos
-  };
-}
-function save(){
-  localStorage.setItem(STORAGE_KEY, JSON.stringify(snap()));
-}
-function restore(){
-  try {
-    const s = JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');
-    if(!s) return;
-    document.getElementById('reportTitle').innerHTML = s.title;
-    document.getElementById('hijriDate').innerHTML = s.h;
-    document.getElementById('goals').innerHTML = s.g;
-    document.getElementById('about').innerHTML = s.a;
-    const cells = [...document.querySelectorAll('#infoTable th,#infoTable td')];
-    s.cells?.forEach((v, i) => { if(cells[i]) cells[i].innerHTML = v; });
-    const boxes = [...document.querySelectorAll('.gallery .photo')];
-    s.photos?.forEach((src, i) => {
-      if(!src || !boxes[i]) return;
-      let img = boxes[i].querySelector('img');
-      if(!img){ img = document.createElement('img'); boxes[i].appendChild(img); }
-      img.src = src;
-      boxes[i].querySelector('.hint')?.remove();
-    });
-    ['goals','about'].forEach(fitBox);
-  } catch{}
-}
-function makePdf(){
-  return new Promise(async (resolve, reject) => {
-    try {
-      const imgs = [...document.querySelectorAll('#sheet img')];
-      for(const im of imgs){
-        if(!im.src.startsWith('data:image')){
-          try{ im.src = await toDataURL(im); }catch{}
-        }
-      }
-      const canvas = await html2canvas(document.getElementById('sheet'),{
-        scale:Math.min(window.devicePixelRatio||2,2.4),
-        backgroundColor:'#ffffff',useCORS:true,allowTaint:false,scrollX:0,scrollY:-window.scrollY,
-        ignoreElements:(el)=>el?.dataset?.nopdf==='true'||el?.tagName==='INPUT'
-      });
-      const img = canvas.toDataURL('image/jpeg', 0.96);
-      const { jsPDF } = window.jspdf;
-      const pdf = new jsPDF({ orientation:'p', unit:'mm', format:'a4' });
-      const W = pdf.internal.pageSize.getWidth(),
-            H = pdf.internal.pageSize.getHeight(),
-            w = W,
-            h = (canvas.height * W) / canvas.width,
-            fit = h <= H,
-            drawW = fit ? w : (canvas.width * H) / canvas.height,
-            drawH = fit ? h : H;
-      pdf.addImage(img, 'JPEG', (W-drawW)/2, (H-drawH)/2, drawW, drawH, '', 'FAST');
-      const title = (document.getElementById('reportTitle').innerText||'Report').replace(/[\\/:*?"<>|]+/g, ' ').trim();
-      const hijri = (document.getElementById('hijriDate').innerText||'').replace(/\s+/g, ' ').trim();
-      pdf.save(`${title} - ${hijri}.pdf`);
-      resolve();
-    } catch(e){ reject(e); }
-  });
-}
-function resetReport(){
-  localStorage.removeItem(STORAGE_KEY);
-  location.reload();
-}
-document.addEventListener('DOMContentLoaded', () => {
-  restore();
-  ['goals','about'].forEach(id => {
-    const el = document.getElementById(id);
-    ['input','keyup','blur'].forEach(evt => el.addEventListener(evt, () => { fitBox(id); save(); }));
-    fitBox(id);
-  });
-  document.querySelectorAll('.gallery .photo').forEach(bindPhotoBox);
-  document.getElementById('btnPdf')?.addEventListener('click', async () => {
-    try {
-      setBusy(true);
-      save();
-      await makePdf();
-      resetReport();
-    } catch(e){
-      console.error(e);
-      alert('تعذّر إنشاء PDF.');
-    } finally {
-      setBusy(false);
+  <!-- صورة العنوان أعلى التقرير -->
+  <div style="text-align: center; margin-bottom: 20px;">
+    <img src="header.jpg" alt="Header" style="max-width: 100%; height: auto;">
+  </div>
+
+  <!-- نموذج إدخال بيانات التقرير -->
+  <form id="formReport">
+    <label for="name">الاسم:</label><br>
+    <input type="text" id="name" name="name" placeholder="أدخل الاسم"><br>
+
+    <label for="id">الرقم التعريفي:</label><br>
+    <input type="text" id="id" name="id" placeholder="أدخل الرقم التعريفي"><br>
+
+    <label for="notes">ملاحظات:</label><br>
+    <textarea id="notes" name="notes" rows="4" cols="50" placeholder="أدخل الملاحظات"></textarea><br>
+
+    <!-- زر الحفظ والطباعة -->
+    <button type="button" class="no-print" onclick="saveAndPrint()">الحفظ والطباعة</button>
+  </form>
+
+  <script>
+    // وظيفة الطباعة ثم إعادة ضبط النموذج
+    function saveAndPrint() {
+      window.print();  // فتح نافذة الحوار للطباعة/الحفظ
+      // سيتم إعادة ضبط الحقول تلقائياً بعد إغلاق نافذة الطباعة بواسطة الحدث onafterprint
     }
-  });
-});
-</script>
+
+    // حدث يُستدعى تلقائياً بعد انتهاء عملية الطباعة أو إغلاق معاينة الطباعة
+    window.onafterprint = function() {
+      // إعادة تعيين جميع حقول النموذج إلى قيمها الافتراضية (تفريغها)
+      document.getElementById('formReport').reset();
+    };
+  </script>
 </body>
 </html>
